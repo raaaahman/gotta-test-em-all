@@ -50,24 +50,22 @@ export default function PokeMonList() {
           <li key={pokemon.name}>{pokemon.name}</li>
         ))}
       </ul>
-      {previous && (
-        <button
-          onClick={() => {
-            setPage(previous);
-          }}
-        >
-          &lt; Previous
-        </button>
-      )}
-      {next && (
-        <button
-          onClick={() => {
-            setPage(next);
-          }}
-        >
-          Next &gt;
-        </button>
-      )}
+      <button
+        disabled={!previous}
+        onClick={() => {
+          setPage(previous);
+        }}
+      >
+        &lt; Previous
+      </button>
+      <button
+        disabled={!next}
+        onClick={() => {
+          setPage(next);
+        }}
+      >
+        Next &gt;
+      </button>
     </div>
   );
 }
