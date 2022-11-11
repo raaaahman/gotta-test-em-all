@@ -14,7 +14,7 @@ const handlers = [
         request.url.searchParams.get("offset") == 3 &&
         request.url.searchParams.get("limit") == 3
       ) {
-        response(
+        return response(
           context.status(200),
           context.json({
             next: null,
@@ -27,7 +27,7 @@ const handlers = [
           })
         );
       } else {
-        response(
+        return response(
           context.status(200),
           context.json({
             next: "https://pokeapi.co/api/v2/pokemon/?offset=3&limit=3",
