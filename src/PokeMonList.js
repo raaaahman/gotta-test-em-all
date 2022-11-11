@@ -11,10 +11,10 @@ export default function PokeMonList() {
   useEffect(() => {
     const abortController = new AbortController();
 
-    const fetchPokemons = () => {
+    const fetchPokemons = async () => {
       try {
         setIsFetching(true);
-        fetch(page, {
+        await fetch(page, {
           signal: abortController.signal
         })
           .then((response) => response.json())
@@ -25,7 +25,9 @@ export default function PokeMonList() {
             setPokemons(pokemons.results);
           });
       } catch (error) {
-        setIsError(true);
+        if (error.name !== "AbortError") {
+          setIsError(true);
+        }
       }
     };
 
