@@ -88,8 +88,6 @@ describe("The PokMonList component", () => {
 
     const nextButton = await screen.findByRole("button", { name: /next/i });
 
-    expect(nextButton).toBeInTheDocument();
-
     await user.pointer({ keys: "[MouseLeft]", target: nextButton });
 
     const firstElement = await screen.findByText("charmander");
@@ -102,12 +100,34 @@ describe("The PokMonList component", () => {
 
     let nextButton = await screen.findByRole("button", { name: /next/i });
 
-    expect(nextButton).toBeInTheDocument();
-
     await user.pointer({ keys: "[MouseLeft]", target: nextButton });
 
     nextButton = await screen.findByRole("button", { name: /next/i });
 
     expect(nextButton).toBeDisabled();
+  });
+
+  it("disables the 'Previous' button if there it is the first results page", async () => {
+    render(<PokeMonList />);
+
+    const previousButton = await screen.findByRole("button", { name: /previous/i });
+
+    expect(previousButton).toBeDisabled();
+  });
+
+  it("switches to the previous page of results when the user clicks the 'Previous' button", async () => {
+    render(<PokeMonList />);
+
+    const nextButton = await screen.findByRole("button", { name: /next/i });
+
+    await user.pointer({ keys: "[MouseLeft]", target: nextButton});
+    
+    const previousButton = await screen.findByRole("button", { name: /next/i });
+
+    await user.pointer({ keys: "[MouseLeft]", target: previousButton });
+
+    const firstElement = await screen.findByText("charmander");
+
+    expect(firstElement).toBeInTheDocument();
   });
 });
