@@ -6,6 +6,8 @@ import { setupServer } from "msw/node";
 
 import PokeMonList from "./PokeMonList";
 
+console.log('Running tests')
+
 const handlers = [
   rest.get(
     "https://pokeapi.co/api/v2/pokemon",
@@ -55,8 +57,6 @@ describe("The PokMonList component", () => {
     user = userEvent.setup();
   });
 
-  // afterEach(() => server.resetHandlers());
-
   afterAll(() => server.close());
 
   it("displays a loading message before request is finished", () => {
@@ -75,12 +75,12 @@ describe("The PokMonList component", () => {
     expect(firstElement).toBeInTheDocument();
   });
 
-  it("displays the next button if there is another page of results", async () => {
+  it("enables the next button if there is another page of results", async () => {
     render(<PokeMonList />);
 
     const nextButton = await screen.findByRole("button", { name: /next/i });
 
-    expect(nextButton).toBeInTheDocument();
+    expect(nextButton).not.toBeDisabled();
   });
 
   it("switch to the next page of results when user clicks the 'Next' button", async () => {

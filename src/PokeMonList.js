@@ -1,71 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import useFetch from "./hooks/useFetch";
 
 export default function PokeMonList() {
-  const [isFetching, setIsFetching] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [pokemons, setPokemons] = useState([]);
-  const [previous, setPrevious] = useState(null);
-  const [next, setNext] = useState(null);
-  const [page, setPage] = useState("https://pokeapi.co/api/v2/pokemon");
+  const [ page, setPage ] = useState("https://pokeapi.co/api/v2/pokemon");
+  const { status, value } = useFetch(page);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const fetchPokemons = async () => {
-      try {
-        setIsFetching(true);
-        await fetch(page, {
-          signal: abortController.signal
-        })
-          .then((response) => response.json())
-          .then((pokemons) => {
-            setIsFetching(false);
-            setPrevious(pokemons.previous);
-            setNext(pokemons.next);
-            setPokemons(pokemons.results);
-          });
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          setIsError(true);
-        }
-      }
-    };
-
-    fetchPokemons();
-
-    return () => {
-      abortController.abort();
-      setIsFetching(false);
-    };
-  }, [page]);
-
-  return isFetching ? (
-    "Hol'up a minit..."
-  ) : isError ? (
-    "Oops! A network error occurred... Try to refresh the page. Maybe."
-  ) : (
+  return status === "success" ? (
     <div>
       <ul>
-        {pokemons.map((pokemon) => (
+        {value.results.map((pokemon) => (
           <li key={pokemon.name}>{pokemon.name}</li>
         ))}
       </ul>
       <button
-        disabled={!previous}
+        disabled={typeof value.previous !== "string"}
         onClick={() => {
-          setPage(previous);
+          setPage(value.previous);
         }}
       >
         &lt; Previous
       </button>
       <button
-        disabled={!next}
+        disabled={typeof value.next !== "string"}
         onClick={() => {
-          setPage(next);
+          setPage(value.next);
         }}
       >
         Next &gt;
       </button>
     </div>
-  );
+  ) : status === "error" ? (
+    "Oops! A network error occurred... Try to refresh the page. Maybe."
+  ) : "Hol'up a minit...";
 }
