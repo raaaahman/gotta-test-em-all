@@ -3,13 +3,13 @@ import useFetch from "./hooks/useFetch";
 
 import PokemonListPresenter from "./PokemonListPresenter";
 
-export default function PokemonListcontainer() {
+export default function PokemonListcontainer({ renderList }) {
   const [ page, setPage ] = useState("https://pokeapi.co/api/v2/pokemon");
   const { status, value } = useFetch(page);
 
   return status === "success" ? (
     <div>
-      <PokemonListPresenter pokemons={value.results} />
+      { renderList({ pokemons: value.results }) }
       <button
         disabled={typeof value.previous !== "string"}
         onClick={() => {
