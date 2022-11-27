@@ -4,9 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 
-import PokeMonList from "./PokeMonList";
-
-console.log('Running tests')
+import PokemonListContainer from "./PokeMonListContainer";
 
 const handlers = [
   rest.get(
@@ -48,7 +46,7 @@ const handlers = [
 
 const server = setupServer(...handlers);
 
-describe("The PokMonList component", () => {
+describe("The PokemonListContainer component", () => {
   let user;
 
   beforeAll(() => server.listen());
@@ -60,7 +58,7 @@ describe("The PokMonList component", () => {
   afterAll(() => server.close());
 
   it("displays a loading message before request is finished", () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     const waitingText = screen.getByText("Hol'up a minit...");
 
@@ -68,7 +66,7 @@ describe("The PokMonList component", () => {
   });
 
   it("displays the pokemons after a successful requests", async () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     const firstElement = await screen.findByText("bulbasaur");
 
@@ -76,7 +74,7 @@ describe("The PokMonList component", () => {
   });
 
   it("enables the next button if there is another page of results", async () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     const nextButton = await screen.findByRole("button", { name: /next/i });
 
@@ -84,7 +82,7 @@ describe("The PokMonList component", () => {
   });
 
   it("switch to the next page of results when user clicks the 'Next' button", async () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     const nextButton = await screen.findByRole("button", { name: /next/i });
 
@@ -96,7 +94,7 @@ describe("The PokMonList component", () => {
   });
 
   it("disables the 'Next' button if there is no more results page", async () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     let nextButton = await screen.findByRole("button", { name: /next/i });
 
@@ -108,7 +106,7 @@ describe("The PokMonList component", () => {
   });
 
   it("disables the 'Previous' button if there it is the first results page", async () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     const previousButton = await screen.findByRole("button", { name: /previous/i });
 
@@ -116,7 +114,7 @@ describe("The PokMonList component", () => {
   });
 
   it("switches to the previous page of results when the user clicks the 'Previous' button", async () => {
-    render(<PokeMonList />);
+    render(<PokemonListContainer />);
 
     const nextButton = await screen.findByRole("button", { name: /next/i });
 
