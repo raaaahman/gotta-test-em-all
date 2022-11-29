@@ -1,55 +1,9 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
 
+import server, { PAGE_1_RESULTS, PAGE_2_RESULTS } from "./__test__/server";
 import PokemonListContainer from "./PokeMonListContainer";
-import PokemonListPresenter from "./PokemonListPresenter";
-
-const PAGE_1_RESULTS = [
-  { name: "charmander" },
-  { name: "charmeleon" },
-  { name: "charizard" }
-];
-
-const PAGE_2_RESULTS = [
-  { name: "bulbasaur" },
-  { name: "ivysaur" },
-  { name: "venusaur" }
-];
-
-const handlers = [
-  rest.get(
-    "https://pokeapi.co/api/v2/pokemon",
-    (request, response, context) => {
-      if (
-        request.url.searchParams.get("offset") == 3 &&
-        request.url.searchParams.get("limit") == 3
-      ) {
-        return response(
-          context.status(200),
-          context.json({
-            next: null,
-            previous: 'https://pokeapi.co/api/v2/pokemon"',
-            results: PAGE_1_RESULTS
-          })
-        );
-      } else {
-        return response(
-          context.status(200),
-          context.json({
-            next: "https://pokeapi.co/api/v2/pokemon/?offset=3&limit=3",
-            previous: null,
-            results: PAGE_2_RESULTS
-          })
-        );
-      }
-    }
-  )
-];
-
-const server = setupServer(...handlers);
 
 describe("The PokemonListContainer component", () => {
   let user, renderListMock = jest.fn();
@@ -71,14 +25,6 @@ describe("The PokemonListContainer component", () => {
     expect(waitingText).toBeInTheDocument();
   });
 
-  it("displays the pokemons after a successful requests", async () => {
-    render(<PokemonListContainer renderList={PokemonListPresenter} />);
-
-    const firstElement = await screen.findByText("bulbasaur");
-
-    expect(firstElement).toBeInTheDocument();
-  });
-
   it("enables the next button if there is another page of results", async () => {
     render(<PokemonListContainer renderList={renderListMock}/>);
 
@@ -90,11 +36,13 @@ describe("The PokemonListContainer component", () => {
   it("switch to the next page of results when user clicks the 'Next' button", async () => {
     render(<PokemonListContainer renderList={renderListMock} />);
 
-    const nextButton = await screen.findByRole("button", { name: /next/i });
+    let nextButton = await screen.findByRole("button", { name: /next/i });
 
     await user.pointer({ keys: "[MouseLeft]", target: nextButton });
 
-    expect(renderListMock).toHaveBeenCalledWith({ pokemons: PAGE_2_RESULTS });
+    nextButton = await screen.findByRole("button", { name: /next/i });
+
+    expect(renderListMock).toHaveBeenLastCalledWith({ pokemons: PAGE_2_RESULTS });
   });
 
   it("disables the 'Next' button if there is no more results page", async () => {
@@ -124,9 +72,11 @@ describe("The PokemonListContainer component", () => {
 
     await user.pointer({ keys: "[MouseLeft]", target: nextButton});
     
-    const previousButton = await screen.findByRole("button", { name: /next/i });
+    let previousButton = await screen.findByRole("button", { name: /previous/i });
 
     await user.pointer({ keys: "[MouseLeft]", target: previousButton });
+
+    previousButton = await screen.findByRole("button", { name: /next/i });
 
     expect(renderListMock).toHaveBeenLastCalledWith({ pokemons: PAGE_1_RESULTS });
   });

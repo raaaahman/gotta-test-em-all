@@ -1,8 +1,6 @@
 import { useState } from "react";
 import useFetch from "./hooks/useFetch";
 
-import PokemonListPresenter from "./PokemonListPresenter";
-
 export default function PokemonListcontainer({ renderList }) {
   const [ page, setPage ] = useState("https://pokeapi.co/api/v2/pokemon");
   const { status, value } = useFetch(page);

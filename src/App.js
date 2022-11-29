@@ -1,11 +1,12 @@
 import "./styles.css";
-import PokeMonList from "./PokeMonList";
+import PokeMonListContainer from "./PokeMonListContainer";
+import PokemonListPresenter from "./PokemonListPresenter";
 
 export default function App() {
   return (
     <div className="App">
       <h1>Gotta catch'em all!</h1>
-      <PokeMonList />
+      <PokeMonListContainer renderList={PokemonListPresenter} />
     </div>
   );
 }
